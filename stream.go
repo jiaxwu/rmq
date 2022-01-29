@@ -45,9 +45,11 @@ func (q *StreamMQ) Consume(ctx context.Context, topic, group, consumer, start st
 		return err
 	}
 	for {
+		// 拉取新消息
 		if err := q.consume(ctx, topic, group, consumer, ">", batchSize, h); err != nil {
 			return err
 		}
+		// 拉取已经投递却未被ACK的消息，保证消息至少被成功消费1次
 		if err := q.consume(ctx, topic, group, consumer, "0", batchSize, h); err != nil {
 			return err
 		}
